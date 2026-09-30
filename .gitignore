@@ -1,0 +1,5 @@
+.DS_Store
+.claude/
+*.local.json
+cycle-partner-*.json
+Cycle Partner PWA — первичные требования.md
