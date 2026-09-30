@@ -171,7 +171,10 @@ function renderToday() {
   </section>
 
   <div class="actions">
-    ${s.starts.includes(today) ? '' : `<button class="btn" data-action="start-today-confirm">${t('today.startedToday')}</button>`}
+    <div class="row">
+      ${s.starts.includes(today) ? '' : `<button class="btn" data-action="start-today-confirm">${t('today.startedToday')}</button>`}
+      <label class="btn">${t('today.startedOther')}<input type="date" class="hidden-date" data-action="start-pick" max="${today}"></label>
+    </div>
     <button class="link" data-action="open-pms">${t('today.pmsLink')}</button>
   </div>`;
 }
@@ -384,7 +387,7 @@ function renderDaySheet(date) {
   return `
     <h2>${fmtDate(date, { weekday: 'long', day: 'numeric', month: 'long' })}</h2>
     <p class="muted">${info ? `<i class="sw ph-${info.phase}"></i>${t('day.cycleDay', { day: info.day, phase: t('phase.' + info.phase) })}${info.pms ? ' · ' + t('phase.pms') : ''}` : t('day.noCycle')}</p>
-    ${future ? '' : `<label class="check"><input type="checkbox" data-action="toggle-start" data-date="${date}"${isStart ? ' checked' : ''}> ${t('day.startHere')}</label>
+    ${future ? `<p class="muted small">${t('day.futureHint')}</p>` : `<label class="check"><input type="checkbox" data-action="toggle-start" data-date="${date}"${isStart ? ' checked' : ''}> ${t('day.startHere')}</label>
     ${moodChips(date)}
     ${noteInput(date)}`}
     <button class="btn primary wide" data-action="close-sheet">${t('day.close')}</button>`;
