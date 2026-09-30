@@ -576,9 +576,22 @@ async function init() {
   document.addEventListener('visibilitychange', () => { if (!document.hidden) render(); });
   render();
 
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js').catch(() => {});
-  }
+  if ('serviceWorker' in navigator) registerSW();
+}
+
+// iOS не перезапускает PWA при возврате в неё, поэтому проверяем обновление сами,
+// а когда новая версия service worker взяла управление — перезагружаемся на неё.
+function registerSW() {
+  const hadController = !!navigator.serviceWorker.controller;
+  let reloading = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!hadController || reloading) return;
+    reloading = true;
+    location.reload();
+  });
+  navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then((reg) => {
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) reg.update().catch(() => {}); });
+  }).catch(() => {});
 }
 
 init();

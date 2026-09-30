@@ -1,8 +1,10 @@
 // Работа без сети: при запуске отдаём файлы из кэша, а в фоне берём свежие.
-// Новая версия после push подхватывается при следующем запуске приложения.
+// Новая версия после push подхватывается при следующем открытии приложения.
+// Все запросы к серверу идут с cache: 'no-cache', иначе HTTP-кэш GitHub Pages (10 минут)
+// подсовывает старые файлы даже новой версии service worker.
 // CACHE меняй вместе с VERSION в js/version.js.
 
-const CACHE = 'cycle-partner-0.1.2';
+const CACHE = 'cycle-partner-0.1.3';
 const ASSETS = [
   './',
   'index.html',
@@ -23,7 +25,7 @@ const ASSETS = [
 ];
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS.map((u) => new Request(u, { cache: 'no-cache' })))).then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', (e) => {
@@ -42,7 +44,7 @@ self.addEventListener('fetch', (e) => {
     caches.open(CACHE).then(async (cache) => {
       const key = req.mode === 'navigate' ? 'index.html' : req;
       const cached = await cache.match(key, { ignoreSearch: true });
-      const fresh = fetch(req)
+      const fresh = fetch(req.url, { cache: 'no-cache' })
         .then((res) => {
           if (res.ok) cache.put(key, res.clone());
           return res;
