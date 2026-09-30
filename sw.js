@@ -2,7 +2,7 @@
 // Новая версия после push подхватывается при следующем запуске приложения.
 // CACHE меняй вместе с VERSION в js/version.js.
 
-const CACHE = 'cycle-partner-0.1.0';
+const CACHE = 'cycle-partner-0.1.1';
 const ASSETS = [
   './',
   'index.html',
